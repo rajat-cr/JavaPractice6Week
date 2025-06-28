@@ -32,9 +32,9 @@ public class PracticeFrame extends javax.swing.JFrame {
 
     void getTable(){
         
-        formList.add(new FormModel("Tanish","tanish@gmail.com","1234567890","123456"));
-        formList.add(new FormModel("Rajat","rajat@gmail.com","1234567890","123444"));
-        formList.add(new FormModel("Smiran","simran@gmail.com","1234567890","123123"));
+//        formList.add(new FormModel("Tanish","tanish@gmail.com","1234567890","123456"));
+//        formList.add(new FormModel("Rajat","rajat@gmail.com","1234567890","123444"));
+//        formList.add(new FormModel("Smiran","simran@gmail.com","1234567890","123123"));
      
     String header[] = {"Name","Email","Contact No","Password"};
     
@@ -268,6 +268,9 @@ public class PracticeFrame extends javax.swing.JFrame {
                 
                 if(ps.executeUpdate() > 0){
                   System.out.println("Data Inserted");
+                  StudentForm std = new StudentForm();
+                  std.setVisible(true);
+                  dispose();
                 }
                } catch (SQLException ex) {
                    System.getLogger(PracticeFrame.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);

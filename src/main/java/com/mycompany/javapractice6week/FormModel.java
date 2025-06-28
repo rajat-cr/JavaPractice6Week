@@ -9,17 +9,23 @@ package com.mycompany.javapractice6week;
  * @author ASUS
  */
 public class FormModel {
+    private int id;
     private String name;
         private String email;
             private String contactNo;
                 private String password;
 
 
-    public FormModel(String name, String email, String contactNo, String password) {
+    public FormModel(int id, String name, String email, String contactNo, String password) {
+        this.id = id;
         this.name = name;
         this.email =email;
         this.contactNo = contactNo;
         this.password = password;
+    }
+    
+    int getid(){
+    return id;
     }
     
     String getName(){

@@ -4,6 +4,9 @@
  */
 package com.mycompany.javapractice6week;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
@@ -13,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class StudentForm extends javax.swing.JFrame {
     ArrayList<FormModel> formList = new ArrayList<>();
+    SingletonClass conn = SingletonClass.getInstance();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(StudentForm.class.getName());
 
     /**
@@ -23,23 +27,43 @@ public class StudentForm extends javax.swing.JFrame {
         getStudent();
     }
     void getStudent(){
-         formList.add(new FormModel("Tanish","tanish@gmail.com","1234567890","123456"));
-        formList.add(new FormModel("Rajat","rajat@gmail.com","1234567890","123444"));
-        formList.add(new FormModel("Smiran","simran@gmail.com","1234567890","123123"));
+//        formList.add(new FormModel("Tanish","tanish@gmail.com","1234567890","123456"));
+//        formList.add(new FormModel("Rajat","rajat@gmail.com","1234567890","123444"));
+//        formList.add(new FormModel("Smiran","simran@gmail.com","1234567890","123123"));
+
+
         
-    String header[] = {"Name","Email","Contact No","Password"};
+    String header[] = {"id","Name","Email","Contact No","Password"};
+    String getData = "SELECT * FROM registered";
+    Statement statement;
+        try {
+            statement = conn.connection.createStatement();
+            ResultSet result = statement.executeQuery(getData);
     DefaultTableModel model = new DefaultTableModel(null,header);
     studentTable.setModel(model);
     model.setRowCount(0);
     
-    Object[] row = new Object[4];
+    
+    while(result.next()){
+        formList.add(new FormModel( result.getInt("id"), result.getString("name"), result.getString("email"),result.getString("contactNo"), result.getString("password")));
+    }
+    
+    
+    Object[] row = new Object[5];
+    
+    
     for(FormModel item : formList){
-        row[0] = item.getName();
-        row[1] = item.getEmail();
-        row[2] = item.getContact();
-        row[3] = item.getPassword();
+        row[0] = item.getid();
+        row[1] = item.getName();
+        row[2] = item.getEmail();
+        row[3] = item.getContact();
+        row[4] = item.getPassword();
         model.addRow(row);
     }
+        } catch (SQLException ex) {
+            System.getLogger(StudentForm.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    
     }
     /**
      * This method is called from within the constructor to initialize the form.
