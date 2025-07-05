@@ -28,6 +28,13 @@ public class SingletonClass {
           String registered  = "CREATE TABLE IF NOT EXISTS registered(id INT AUTO_INCREMENT, name varchar(225), email varchar(225), contactNo varchar(225), password varchar(225), PRIMARY KEY(id))";
          PreparedStatement ps = connection.prepareStatement(registered);
          ps.execute();
+         
+            String login  = "CREATE TABLE IF NOT EXISTS login(id INT AUTO_INCREMENT, name varchar(225), email varchar(225), PRIMARY KEY(id))";
+         PreparedStatement ps1 = connection.prepareStatement(login);
+         ps1.execute();
+         
+         
+         
           
       }
       }catch(SQLException exception){
