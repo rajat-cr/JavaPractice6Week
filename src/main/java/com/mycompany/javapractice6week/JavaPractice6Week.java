@@ -17,7 +17,7 @@ public class JavaPractice6Week {
         //jdbc:mysql://localhost:3306/6weekbatch?zeroDateTimeBehavior=CONVERT_TO_NULL [root on Default schema]
         SingletonClass conn =  SingletonClass.getInstance();
         
-        RegisteredForm screen = new RegisteredForm();
+        ImageScreen screen = new ImageScreen();
         screen.setVisible(true);
     }
 }
