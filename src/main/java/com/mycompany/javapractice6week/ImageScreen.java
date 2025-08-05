@@ -4,10 +4,21 @@
  */
 package com.mycompany.javapractice6week;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Base64;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -134,9 +145,10 @@ public class ImageScreen extends javax.swing.JFrame {
              Image scaledImage = img.getScaledInstance(showImage.getWidth(), showImage.getHeight(), Image.SCALE_SMOOTH);
              showImage.setIcon(new ImageIcon(scaledImage));
              
-                   
-            
-        
+           String byteArray = imageConvertByteArray(img);
+           String response = geminiResponse(byteArray);
+           String getResponse = responseFromGemini(response);
+           System.out.println("Check Image Response: "+getResponse);
         }catch(IOException ex){
           System.out.println("Check IOException: "+ex);
         }
@@ -145,6 +157,77 @@ public class ImageScreen extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    String imageConvertByteArray(BufferedImage img) {
+        ByteArrayOutputStream byteArr = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(img, "jpeg", byteArr);
+            byte[] bytes = byteArr.toByteArray();
+            return Base64.getEncoder().encodeToString(bytes);
+        } catch (IOException ex) {
+            System.getLogger(ImageScreen.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        return "";
+    }
+    
+    String geminiResponse(String byteArray)throws IOException{
+        String apiKey = "AIzaSyAOGMRzGKtpI2aenHZzxWQi1jR2-Vtqmfg";
+        String api_k = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+   
+    String json = """
+{
+  "contents": [
+    {
+      "parts": [
+        {
+          "inlineData": {
+            "mimeType": "image/jpeg",
+            "data": "%s"
+          }
+        },
+        {
+          "text": "Describe this image."
+        }
+      ]
+    }
+  ]
+}
+""".formatted(byteArray);
+        
+    URL url = new URL(api_k);
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection(); //Opens an HTTP connection to the API URL.
+   //Tells the connection you want to send data (i.e., a request body).
+    conn.setDoOutput(true);
+    conn.setRequestMethod("POST");
+    conn.setRequestProperty("Content-Type", "application/json");// send data in json body
+
+    try (OutputStream os = conn.getOutputStream()) {
+        os.write(json.getBytes());
+    }
+//Reads the server's response line by line.
+//Uses a BufferedReader to read the text response from the connection.
+//Stores each line in a StringBuilder.
+    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    StringBuilder response = new StringBuilder();
+    String line;
+    while ((line = in.readLine()) != null) {
+        response.append(line);
+    }
+    in.close();
+    return response.toString();
+    }
+    
+    String responseFromGemini(String response) {
+    JsonObject obj = JsonParser.parseString(response).getAsJsonObject();
+    JsonArray cand = obj.getAsJsonArray("candidates");
+
+    if (cand != null && cand.size() > 0) {
+        return cand.get(0).getAsJsonObject()
+                .get("content").getAsJsonObject()
+                .getAsJsonArray("parts").get(0).getAsJsonObject()
+                .get("text").getAsString();
+    }
+    return "Data not found"; 
+    }
     /**
      * @param args the command line arguments
      */
